@@ -1,6 +1,6 @@
 # reach
 
-A media lets you reach others!
+A social media that allows us reach each other!
 
 ## Getting Started
 
