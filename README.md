@@ -15,4 +15,4 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.io/docs), which offers tutorials, 
 samples, guidance on mobile development, and a full API reference.
 
-## Demo video: https://github.com/GeorgeeeLiu/Reach/blob/master/reach_video.mp4
+## [Reach Demo video](https://github.com/GeorgeeeLiu/Reach/blob/master/reach_video.mp4)
