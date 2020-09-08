@@ -2,6 +2,13 @@
 
 A social media that allows us reach each other!
 
+## Screenshots
+![Alt text](./screenshots/menu.png)
+![Alt text](./screenshots/message.png)
+![Alt text](./screenshots/photoshare.png)
+
+## [Reach Demo video](https://github.com/GeorgeeeLiu/Reach/blob/master/reach_video.mp4)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
@@ -15,4 +22,4 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.io/docs), which offers tutorials, 
 samples, guidance on mobile development, and a full API reference.
 
-## [Reach Demo video](https://github.com/GeorgeeeLiu/Reach/blob/master/reach_video.mp4)
+

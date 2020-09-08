@@ -9,28 +9,23 @@ class PhotoShareScoreScreen extends StatefulWidget {
 }
 
 class PhotoShareScoreState extends State {
-  DatabaseReference scoresDbRef;
-  List scoresData;
-  var newScore = 0;
 
   void initState() {
     super.initState();
-
     var selectedPostKey = selectedPostInfo["key"];
 
-    // Firebase database reference to the scores of the PhotoShare post
-    scoresDbRef = FirebaseDatabase.instance
-        .reference()
-        .child("photoShareScore/$selectedPostKey");
+    scoresDbRef = FirebaseDatabase.instance.reference().child("photoShareScore/$selectedPostKey");
 
-    // when the data of the scores of the PhotoShare post are ready...
     scoresDbRef.onValue.listen((event) {
-      // obtain the data and sort them by "post_time" in desc. order
+// obtain the data and sort them by "post_time" in desc. order
       scoresData = sort(event.snapshot.value, "post_time", false);
       if (mounted) setState(() {});
     });
   }
 
+  DatabaseReference scoresDbRef;
+  List scoresData;
+  var newScore = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +63,8 @@ class PhotoShareScoreState extends State {
               trailing: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  Text(
-                    user,
-                    textAlign: TextAlign.right,
-                    style:
-                        TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                  Text(user, textAlign: TextAlign.right, style:
+                  TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
                   ),
                   Text(postTime,
                       textAlign: TextAlign.right,
@@ -104,7 +96,7 @@ class PhotoShareScoreState extends State {
     if (scoresData != null) {
       // if the value of variable scoresData is ready...
       scoresData.forEach(
-        (record) {
+            (record) {
           // for each score record...
 
           String scorer = record["scorer"];
@@ -140,6 +132,7 @@ class PhotoShareScoreState extends State {
 
     return Scaffold(
       appBar: AppBar(
+
           title: Text("PHOTO SHARE",
               style: TextStyle(fontFamily: "Oswald", fontSize: 30))),
       body: Column(
@@ -203,43 +196,40 @@ class PhotoShareScoreState extends State {
 
   /* upload the new score data to Firebase database */
   uploadData() {
+
+
     if (newScore == 0) return;
-
-    // new reference to path "/photoShare/{post_ID}/{username}/"
+// new reference to path "/photoShare/{post_ID}/{username}/"
     var newEntryRef = scoresDbRef.child(username);
-
     newEntryRef.set({
-      // set the values
+// set the values
       "scorer": username,
       "score": newScore,
       "post_time": DateTime.now().millisecondsSinceEpoch
     });
 
     scoresDbRef.once().then((snapshot) {
-
-      // obtain the updated data of the scores
+// obtain the updated data of the scores
       int total = 0;
       int count = 0;
       Map records = snapshot.value as Map;
-
       records.values.forEach((r) {
-        // for each score record...
+// for each score record...
         Map data = r as Map;
         total += data["score"]; // calculate the sum of the scores
         count++; // count the number of records
       });
       var average = total / count;
       selectedPostInfo["score"] = average;
-
       var selectedPostKey = selectedPostInfo["key"];
       var postDbRef = FirebaseDatabase.instance
           .reference().child("photoShare/$selectedPostKey");
-
       postDbRef.update({
         "score": average,
       }); // put the average score to the PhotoShare post
-
     });
 
   }
+
+
 }

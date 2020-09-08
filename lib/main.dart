@@ -33,7 +33,6 @@ class MyApp extends StatelessWidget {
         "photoShare": (context) => PhotoShareScreen(),
         "photoShare/score": (context) => UnavailableScreen(),
         "forum": (context) => ForumScreen(),
-
         "message":(context) => MessageInboxScreen(),
         "message/compose":(context)=>MessageComposeScreen(),
         "message/detail":(context)=>MessageDetailScreen(),

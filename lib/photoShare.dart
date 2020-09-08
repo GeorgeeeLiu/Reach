@@ -12,8 +12,20 @@ class PhotoShareScreen extends StatefulWidget {
   createState() => PhotoShareState();
 }
 
-
 class PhotoShareState extends State {
+  void initState() {
+    super.initState(); // Firebase storage reference to the specific url
+    FirebaseStorage.instance.getReferenceFromUrl("gs://reach2019-82cef.appspot.com")
+        .then((ref) => stRef = ref); // Firebase database reference to path "/photoShare"
+    dbRef = FirebaseDatabase.instance.reference().child("photoShare");
+    dbRef.onValue.listen((event) {
+// when the updated data of PhotoShare are ready...
+// obtain the data and sort them
+// by "post_time" in descending order
+      data = sort(event.snapshot.value, "post_time", false);
+      if (mounted) // refresh the screen if it is still available
+        setState(() {});});}
+
   DatabaseReference dbRef; // Reference of Firebase database
   StorageReference stRef; // Reference of Firebase storage
   List<Map> data;
@@ -21,75 +33,31 @@ class PhotoShareState extends State {
   String titleOfNewPost = "";
   File imgFileOfNewPost;
 
-  void initState() {
-    super.initState();
-
-    // Firebase storage reference to the specific url
-    FirebaseStorage.instance
-        .getReferenceFromUrl("gs://reach2019-82cef.appspot.com")
-        .then((ref) => stRef = ref);
-
-    // Firebase database reference to path "/photoShare"
-    dbRef = FirebaseDatabase.instance.reference().child("photoShare");
-
-    dbRef.onValue.listen((event) {
-      // when the updated data of PhotoShare are ready...
-      // obtain the data and sort them
-      // by "post_time" in descending order
-      data = sort(event.snapshot.value, "post_time", false);
-
-      if (mounted) // refresh the screen if it is still available
-        setState(() {});
-    });
-
-
-  }
-
-
   @override
   Widget build(BuildContext context) {
     var childWidgets = <Widget>[];
-
     if (data != null) {
-      // if the data of PhotoShare are ready...
       for (int i = 0; i < data.length; i++) {
-        // for each post...
         var postData = data[i];
-
         String title = postData["title"];
         String url = postData["url"];
         String user = postData["user"];
-        String score = postData["score"] is int
-            ? "${postData["score"]}"
-            : postData["score"].toDouble().toStringAsFixed(1);
-        String postTime = DateFormat("d MMM yyyy\nh:mm a")
-            .format(DateTime.fromMillisecondsSinceEpoch(postData["post_time"]));
-
-        // add a GestureDetector widget
-
+        String score = postData["score"] is int ? "${postData["score"]}" : postData["score"].toDouble().toStringAsFixed(1);
+        String postTime = DateFormat("d MMM yyyy\nh:mm a").format(DateTime.fromMillisecondsSinceEpoch(postData["post_time"]));
         /* beginning of simple layout
-        childWidgets.add(
-          GestureDetector(
+        childWidgets.add(GestureDetector(
               onTap: () => openForScore(i),
-              child: Container(
-                color: Colors.white,
+              child: Container(color: Colors.white,
                 padding: EdgeInsets.all(20.0),
                 child: Column(
                   children: <Widget>[
                     Text("$title ($user) - Score: $score"),
                     Image.network(url),
-                    Text(
-                      postTime,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              )),
-        );
+                    Text(postTime, textAlign: TextAlign.center,),],),)),);
         childWidgets.add(Divider(color: Colors.transparent));
-        end of simple layout */
+         end of simple layout */
 
-        /* beginning of complex layout */
+        /* beginning of complex layout*/
         childWidgets.add(GestureDetector(
           onTap: () => openForScore(i),
           child: Card(
@@ -113,11 +81,9 @@ class PhotoShareState extends State {
                         style: TextStyle(
                             fontSize: 14.0, fontWeight: FontWeight.bold),
                       ),
-                      Text(
-                          postTime,
+                      Text(postTime,
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 10.0)
-                      ),
+                          style: TextStyle(fontSize: 10.0)),
                     ],
                   ),
                 ),
@@ -141,7 +107,7 @@ class PhotoShareState extends State {
             ),
           ),
         ));
-         /* end of complex layout */
+        /*end of complex layout */
       }
     }
 
@@ -150,6 +116,8 @@ class PhotoShareState extends State {
       appBar: AppBar(
           title: Text("PHOTO SHARE",
               style: TextStyle(fontFamily: "Oswald", fontSize: 30))),
+
+
       body: Column(
         children: <Widget>[
           Expanded(
@@ -176,8 +144,6 @@ class PhotoShareState extends State {
                   onChanged: (text) => titleOfNewPost = text,
                 ),
                 Divider(color: Colors.transparent),
-
-
                 // if imgFile is not null, we put an Image widget here. Otherwise, we put an empty container.
                 imgFileOfNewPost != null
                     ? Image.file(imgFileOfNewPost, height: 200)
@@ -226,33 +192,24 @@ class PhotoShareState extends State {
   }
 
   uploadData() {
-    // upload data to Firebase
     if (titleOfNewPost.trim().length == 0 || imgFileOfNewPost == null)
       return; // do nothing if the data are not ready.
-
     String myTitle = titleOfNewPost.trim();
     File myFile = imgFileOfNewPost;
-
-    // clear the user inputs
-
+// clear the user inputs
     titleOfNewPost = "";
     imgFileOfNewPost = null;
     setState(() {});
-
-    // reference to a new entry under FB database path "/photoShare"
+// reference to a new entry under FB database path "/photoShare"
     DatabaseReference dbNewEntry = dbRef.push();
-
-    // reference to a new entry under FB storage path "/photoShare/{key}"
+// reference to a new entry under FB storage path "/photoShare/{key}"
     StorageReference rfNewEntry = stRef.child("photoShare/${dbNewEntry.key}");
-
-    /*rfNewEntry.putFile(myFile);*/
     rfNewEntry.putFile(myFile).onComplete.then((_) async {
-      // upload photo to FB storage
-      // when upload is completed...
-
+// upload photo to FB storage
+// when upload is completed...
       rfNewEntry.getDownloadURL().then((url){
         dbNewEntry.set({
-          // set the values to the new entry of FB database
+// set the values to the new entry of FB database
           "title": myTitle,
           "url": url,
           "post_time": DateTime.now().millisecondsSinceEpoch,
@@ -261,7 +218,7 @@ class PhotoShareState extends State {
         });
       });
     });
-
+    // upload data to Firebase
   }
 
   /* open a new screen to show the details of the scores of the selected PhotoShare post*/
