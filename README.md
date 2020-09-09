@@ -3,9 +3,11 @@
 A social media that allows us reach each other!
 
 ## Screenshots
-![Alt text](./screenshots/menu.png)
-![Alt text](./screenshots/message.png)
-![Alt text](./screenshots/photoshare.png)
+<img src="./screenshots/menu.png" width="400px" height="800px">
+
+<img src="./screenshots/message.png" width="400px" height="800px">
+
+<img src="./screenshots/photoshare.png" width="400px" height="800px">
 
 ## [Reach Demo video](https://github.com/GeorgeeeLiu/Reach/blob/master/reach_video.mp4)
 
